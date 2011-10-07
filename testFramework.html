@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+       <title>Test framework for the XE QUery Builder</title>
+       <link type="text/css" href="css/ui-lightness/jquery-ui-1.8.16.custom.css" rel="stylesheet" />
+       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+       <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+       <script type="text/javascript" src="Option DB.js"></script>
+    </head>
+    <body>
+        <input id="openDialog" type="button" value="Open dialog" />
+        <div id="queryBuilderDialogDiv" class="ui-helper-hidden ui-dialog-content ui-widget-content" style="display: block; width: auto; min-height: 110px; height: auto; ">
+            <div id="queryElementContainer"></div>
+            <div>
+                <input id="addElement" type="button" value="Add element" /> with
+                <select id="joinTypeSelect">
+                    <option value="AND">AND</option>
+                    <option value="OR">OR</option>
+                    <!--<option value="(">)</option>
+                    <option value=")">)</option>-->
+                </select>
+                as a joiner.
+            </div>
+            <span id="queryPreview"></span>
+        </div>
+        <script type="text/javascript" src="code.js"></script>
+        <script type="text/javascript">
+        $("#openDialog").click(function () {
+            $('#queryBuilderDialogDiv').dialog('open');
+        });
+        $(function() {
+            queryDialog = $("#queryBuilderDialogDiv").dialog({autoOpen: false,width: 600});
+            $("#queryBuilderDialogDiv input[type=text]").keyup(function() {
+                var e = $(this);
+                if (e.val()) {
+                    e.removeClass('empty');
+                    e.addClass('active');
+                } else {
+                    e.addClass('empty');
+                    e.removeClass('active');
+                }
+            });
+        });
+        </script>
+    </body>
+</html>
