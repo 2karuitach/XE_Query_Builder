@@ -2,7 +2,7 @@
 function insertQueryBuilderUI () {
     $('#logRoot').tabs('add', '#tab-XEQueryBuilderUI', 'Query Builder');
     
-    $('#XEQueryBuilderUI').append('<div id="queryElementContainer"></div>' +
+    $('#tab-XEQueryBuilderUI').append('<div id="queryElementContainer"></div>' +
         '<div>' +
 			'<input id="addElement" type="button" value="Add element" /> with ' +
 			'<select id="joinTypeSelect">' +
@@ -21,8 +21,8 @@ function fillIdentifierList() {
 	var listHtml = "", identifier, currentElement = $("#queryElementContainer div:last-child");
 	
 	// Clean up the first element
-	$("#XEQueryBuilderUI div").eq(1).find(".removeElement").hide();
-	$("#XEQueryBuilderUI div").eq(1).find(".joinClause").hide();
+	$("#tab-XEQueryBuilderUI div").eq(1).find(".removeElement").hide();
+	$("#tab-XEQueryBuilderUI div").eq(1).find(".joinClause").hide();
 	
 	// Generate the HTML for the identifier options
 	for (identifier in XEqueryBuilderDB) {
@@ -99,9 +99,9 @@ function fillIdentifierList() {
 	currentElement.find(".identifierSelect").show();
 	
 	// Bind to some events for updating the displayed query
-	$("#XEQueryBuilderUI input").keyup(updateQuery);
-	$("#XEQueryBuilderUI input").click(updateQuery);
-	$("#XEQueryBuilderUI input").change(updateQuery);
+	$("#tab-XEQueryBuilderUI input").keyup(updateQuery);
+	$("#tab-XEQueryBuilderUI input").click(updateQuery);
+	$("#tab-XEQueryBuilderUI input").change(updateQuery);
 	
 	// Bind the remove button's functionality
 	currentElement.find(".removeElement").click(function () {
