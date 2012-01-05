@@ -1,10 +1,28 @@
+// Inserts the base UI building blocks
+function insertQueryBuilderUI () {
+    $('#logRoot').tabs('add', '#tab-XEQueryBuilderUI', 'Query Builder');
+    
+    $('#XEQueryBuilderUI').append('<div id="queryElementContainer"></div>' +
+        '<div>' +
+			'<input id="addElement" type="button" value="Add element" /> with ' +
+			'<select id="joinTypeSelect">' +
+				'<option value="AND">AND</option>' +
+				'<option value="OR">OR</option>' +
+				//'<option value="(">)</option>' +
+				//'<option value=")">)</option>' +
+			'</select>' +
+			' as a joiner.' +
+		'</div>' +
+		'<span id="queryPreview"></span>');
+} // End of insertQueryBuilderUI
+
 // Fills in the identifier list and all subsequent elements
 function fillIdentifierList() {
 	var listHtml = "", identifier, currentElement = $("#queryElementContainer div:last-child");
 	
 	// Clean up the first element
-	$("#queryBuilderDialogDiv div").eq(1).find(".removeElement").hide();
-	$("#queryBuilderDialogDiv div").eq(1).find(".joinClause").hide();
+	$("#XEQueryBuilderUI div").eq(1).find(".removeElement").hide();
+	$("#XEQueryBuilderUI div").eq(1).find(".joinClause").hide();
 	
 	// Generate the HTML for the identifier options
 	for (identifier in XEqueryBuilderDB) {
@@ -81,9 +99,9 @@ function fillIdentifierList() {
 	currentElement.find(".identifierSelect").show();
 	
 	// Bind to some events for updating the displayed query
-	$("#queryBuilderDialogDiv input").keyup(updateQuery);
-	$("#queryBuilderDialogDiv input").click(updateQuery);
-	$("#queryBuilderDialogDiv input").change(updateQuery);
+	$("#XEQueryBuilderUI input").keyup(updateQuery);
+	$("#XEQueryBuilderUI input").click(updateQuery);
+	$("#XEQueryBuilderUI input").change(updateQuery);
 	
 	// Bind the remove button's functionality
 	currentElement.find(".removeElement").click(function () {
@@ -115,16 +133,16 @@ function generateOperandHtml(currentElement) {
 
 // Generates the base HTML for a query element
 function generateElementHTML(joinClause) {
-	var divHtml = "<div class=\"queryElement\">"
-		+ "<span class=\"joinClause\">" + joinClause + "&nbsp;</span>"
-		+ "<select class=\"identifierSelect\"><option disabled=\"disabled\"></option></select>"
-		+ "<select class=\"operatorSelect\" style=\"display: none;\"><option disabled=\"disabled\"></option></select>"
-		+ "<span class=\"inClauseLeft\"></span>"
-		+ "<span class=\"operandContainer\"></span>"
-		+ "<input class=\"qualifierAdd\" type=\"button\" value=\"+\" style=\"display: none;\"/>"
-		+ "<span class=\"inClauseRight\"></span>"
-		+ "<input class=\"removeElement\" type=\"button\" value=\"Remove\" />"
-	+ "</div>";
+	var divHtml = "<div class=\"queryElement\">"+
+        "<span class=\"joinClause\">" + joinClause + "&nbsp;</span>" +
+        "<select class=\"identifierSelect\"><option disabled=\"disabled\"></option></select>" +
+        "<select class=\"operatorSelect\" style=\"display: none;\"><option disabled=\"disabled\"></option></select>" +
+        "<span class=\"inClauseLeft\"></span>" +
+		"<span class=\"operandContainer\"></span>" +
+		"<input class=\"qualifierAdd\" type=\"button\" value=\"+\" style=\"display: none;\"/>" +
+		"<span class=\"inClauseRight\"></span>" +
+		"<input class=\"removeElement\" type=\"button\" value=\"Remove\" />" +
+	"</div>";
 	return divHtml;
 } // End of generateElementHTML()
 
@@ -187,5 +205,6 @@ $("#addElement").click(function () {
 });
 
 $(document).ready(function() {
+    insertQueryBuilderUI();
 	$("#addElement").click();
 });
