@@ -1,7 +1,8 @@
 // Inserts the base UI building blocks
 function insertQueryBuilderUI () {
+    // Add the tab to the interface
     $('#logRoot').tabs('add', '#tab-XEQueryBuilderUI', 'Query Builder');
-    
+    // Build the base UI in the <div> created automatically above
     $('#tab-XEQueryBuilderUI').append('<div id="queryElementContainer"></div>' +
         '<div>' +
 			'<input id="addElement" type="button" value="Add element" /> with ' +
@@ -149,8 +150,9 @@ function generateElementHTML(joinClause) {
 // Update the query text
 function updateQuery() {
 	$("#queryPreview").text(generateQueryString());
-}
+} // End of updateQuery
 
+// Generate the query string based on the current UI elements
 function generateQueryString() {
 	var i, x, j, y, queryString = "", elements = $(".queryElement"), value = "", children;
 	for (i = 0, x = elements.length; i < x; i++) {
@@ -196,7 +198,7 @@ function generateQueryString() {
 		queryString += $(elements[i]).find(".inClauseRight").text();
 	}
 	return queryString;
-}
+} // End of generateQueryString
 
 $("#addElement").click(function () {
 	$("#queryElementContainer").append(generateElementHTML($("#joinTypeSelect").val()));
