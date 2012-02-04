@@ -40,7 +40,7 @@ function fillIdentifierList() {
 	
 	// Bind to the change event of the identifier
 	currentElement.find(".identifierSelect").change(function () {
-		var listHtml = "", currentIdentifier = XEqueryBuilderDB[currentElement.find(".identifierSelect").val()];
+		var listHtml = "", currentIdentifier = XEqueryBuilderDB[currentElement.find(".identifierSelect").val()], operator;
 		// Fill in the operators for the currently selected identifier.
 		for (operator in currentIdentifier.operators) {
 			if (currentIdentifier.operators.hasOwnProperty(operator)) {
