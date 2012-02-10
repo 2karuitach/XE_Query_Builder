@@ -18,6 +18,16 @@ function insertQueryBuilderUI () {
 			' as a joiner.' +
 		'</div>' +
 		'<span id="queryPreview"></span>');
+        
+        // Bind the click() event on the addElement button
+        $("#addElement").click(function () {
+            $("#queryElementContainer").append(generateElementHTML($("#joinTypeSelect").val()));
+            $("#joinTypeSelect").val("AND");
+            fillIdentifierList();
+        });
+        
+        // Trigger the click() event to add the initial element.
+        $("#addElement").click();
 } // End of insertQueryBuilderUI
 
 // Fills in the identifier list and all subsequent elements
@@ -203,13 +213,6 @@ function generateQueryString() {
 	return queryString;
 } // End of generateQueryString
 
-$("#addElement").click(function () {
-	$("#queryElementContainer").append(generateElementHTML($("#joinTypeSelect").val()));
-	$("#joinTypeSelect").val("AND");
-	fillIdentifierList();
-});
-
 $(document).ready(function() {
     insertQueryBuilderUI();
-	$("#addElement").click();
 });
