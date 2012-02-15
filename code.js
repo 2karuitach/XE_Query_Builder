@@ -213,6 +213,63 @@ function generateQueryString() {
 	return queryString;
 } // End of generateQueryString
 
+function parseLBQuery(oldQuery) {
+    var parsedQuery = '', parsedObjArray = null, subQuery, subQueryElement;
+    // Test LB Queries
+    /*
+    [
+        {"spellNames": ["Deep Corruption"], "eventTypes": [1], "sourceNames": ["Linnesdel"]},
+        {"eventTypes": [3], "targetNames": ["Linnesdel"]},
+        {"spellNames": ["Deep Corruption"], "eventTypes": [4], "targetNames": ["Linnesdel"]},
+        {"eventTypes": [6], "sourceNames": ["Momox","Pri","Prontera"]},
+    ]
+    */
+    /*
+    [
+        {},
+        {"eventTypes": [1, 2],
+        "actorNames": ["asdf", "asdfa"],
+        "sourceNames": ["asdf", "asdgf"],
+        "targetNames": ["asdf", "sdgf"],
+        "spellNames": ["asdf", "dfg"],
+        "spellIds": [9999, 1111]}
+    ]
+    */
+    // Since the old Log Browser (LB) queries were essentailly JSON we can start with .parseJSON
+    // If WoL is still using an outdated version of jQuery, use evalJSON (From the JSON plugin) instead of parseJSON.
+    parsedObjArray = jQuery.parseJSON(oldQuery);
+    for (subQuery in parsedObjArray) {
+        if (parsedObjArray.hasOwnProperty(subQuery) && typeof(subQuery) === 'object') { // Check object size as well?
+            for (subQueryElement in subQuery) {
+                if (subQuery.hasOwnProperty(subQueryElement) && typeof(subQueryElement) === 'string') {
+                    switch (subQueryElement.toLowerCase) {
+                        case 'eventtypes':
+                            
+                        break;
+                        case 'actornames':
+                            
+                        break;
+                        case 'sourcenames':
+                            
+                        break;
+                        case 'targetnames':
+                            
+                        break;
+                        case 'spellnames':
+                            
+                        break;
+                        case 'spellids':
+                            
+                        break;
+                        default;
+                    }
+                }
+            }
+        }
+    }
+    return parsedQuery;
+}
+
 $(document).ready(function() {
     insertQueryBuilderUI();
 });
