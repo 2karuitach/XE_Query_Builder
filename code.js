@@ -214,7 +214,7 @@ function generateQueryString() {
 } // End of generateQueryString
 
 function parseLBQuery(oldQuery) {
-    var parsedQuery = '', parsedObjArray = null, subQuery, subQueryElement;
+    var parsedQuery = '', parsedObjArray = null, subQueryElement,i,j,n,m;
     // Test LB Queries
     /*
     [
@@ -234,17 +234,32 @@ function parseLBQuery(oldQuery) {
         "spellNames": ["asdf", "dfg"],
         "spellIds": [9999, 1111]}
     ]
+    [{}, {"eventTypes": [1, 2], "actorNames": ["asdf", "asdfa"], "sourceNames": ["asdf", "asdgf"], "targetNames": ["asdf", "sdgf"], "spellNames": ["asdf", "dfg"], "spellIds": [9999, 1111]}]
     */
     // Since the old Log Browser (LB) queries were essentailly JSON we can start with .parseJSON
     // If WoL is still using an outdated version of jQuery, use evalJSON (From the JSON plugin) instead of parseJSON.
-    parsedObjArray = jQuery.parseJSON(oldQuery);
-    for (subQuery in parsedObjArray) {
-        if (parsedObjArray.hasOwnProperty(subQuery) && typeof(subQuery) === 'object') { // Check object size as well?
-            for (subQueryElement in subQuery) {
-                if (subQuery.hasOwnProperty(subQueryElement) && typeof(subQueryElement) === 'string') {
-                    switch (subQueryElement.toLowerCase) {
+    if (jQuery.parseJSON) {
+        parsedObjArray = jQuery.parseJSON(oldQuery);
+    } else {
+        parsedObjArray = jQuery.evalJSON(oldQuery);
+    }
+    if (parsedObjArray.length > 0) {
+        for (i = 0, j = parsedObjArray.length; i < j; i++) {
+            for (subQueryElement in parsedObjArray[i]) {
+                if (parsedObjArray[i].hasOwnProperty(subQueryElement) && typeof(subQueryElement) === 'string') {
+                    switch (subQueryElement.toLowerCase()) { // Match on lower case to handle odd input
                         case 'eventtypes':
-                            
+                            parsedQuery += 'type IN (';
+                            for (n = 0, m = parsedObjArray[i][subQueryElement].length; n < m; n++) {
+                                /*
+                                *   This is a rough translation that assumes the numerical types from 
+                                *   the LB are equivalent to the values of the type constants
+                                *   in the XE.
+                                */
+                                parsedQuery += parsedObjArray[i][subQueryElement][n] + ',';
+                            }
+                            // Strip the trailing ',' after we are done adding elements
+                            parsedQuery = parsedQuery.substring(0, parsedQuery.length - 1) + ') ';
                         break;
                         case 'actornames':
                             
@@ -261,7 +276,7 @@ function parseLBQuery(oldQuery) {
                         case 'spellids':
                             
                         break;
-                        default;
+                        default: break;
                     }
                 }
             }
