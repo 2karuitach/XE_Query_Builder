@@ -245,18 +245,53 @@ function parseLBQuery(oldQuery) {
     }
     if (parsedObjArray.length > 0) {
         for (i = 0, j = parsedObjArray.length; i < j; i++) {
+            if (i > 0 && parsedQuery.length > 0) {
+                // If we have multiple queries input, OR them together
+                // (As long as the first query wasn't blank)
+                parsedQuery += ' OR ';
+            }
             for (subQueryElement in parsedObjArray[i]) {
                 if (parsedObjArray[i].hasOwnProperty(subQueryElement) && typeof(subQueryElement) === 'string') {
                     switch (subQueryElement.toLowerCase()) { // Match on lower case to handle odd input
                         case 'eventtypes':
                             parsedQuery += 'type IN (';
                             for (n = 0, m = parsedObjArray[i][subQueryElement].length; n < m; n++) {
-                                /*
-                                *   This is a rough translation that assumes the numerical types from 
-                                *   the LB are equivalent to the values of the type constants
-                                *   in the XE.
-                                */
-                                parsedQuery += parsedObjArray[i][subQueryElement][n] + ',';
+                                // Properly associate the old LB number to the XE Constant
+                                switch (parsedObjArray[i][subQueryElement][n]) {
+                                    case 1:
+                                        parsedQuery += 'TYPE_DAMAGE';
+                                    break;
+                                    case 2:
+                                        parsedQuery += 'TYPE_MISS';
+                                    break;
+                                    case 3:
+                                        parsedQuery += 'TYPE_HEAL';
+                                    break;
+                                    case 4:
+                                        parsedQuery += 'TYPE_AURA';
+                                    break;
+                                    case 5:
+                                        parsedQuery += 'TYPE_DEATH';
+                                    break;
+                                    case 6:
+                                        parsedQuery += 'TYPE_CAST';
+                                    break;
+                                    case 7:
+                                        // Catches interrupts too?
+                                        parsedQuery += 'TYPE_DISPEL';
+                                    break;
+                                    case 8:
+                                        parsedQuery += 'TYPE_GAIN';
+                                    break;
+                                    case 11:
+                                        parsedQuery += 'TYPE_SUMMON';
+                                    break;
+                                    case 50:
+                                        parsedQuery += 'TYPE_OTHER';
+                                    break;
+                                    default: break;
+                                }
+                                parsedQuery += ',';
                             }
                             // Strip the trailing ',' after we are done adding elements
                             parsedQuery = parsedQuery.substring(0, parsedQuery.length - 1) + ') ';
