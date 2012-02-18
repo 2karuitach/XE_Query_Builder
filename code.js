@@ -214,28 +214,16 @@ function generateQueryString() {
 } // End of generateQueryString
 
 function parseLBQuery(oldQuery) {
-    var parsedQuery = '', parsedObjArray = null, subQueryElement,i,j,n,m;
-    // Test LB Queries
-    /*
-    [
-        {"spellNames": ["Deep Corruption"], "eventTypes": [1], "sourceNames": ["Linnesdel"]},
-        {"eventTypes": [3], "targetNames": ["Linnesdel"]},
-        {"spellNames": ["Deep Corruption"], "eventTypes": [4], "targetNames": ["Linnesdel"]},
-        {"eventTypes": [6], "sourceNames": ["Momox","Pri","Prontera"]},
-    ]
-    */
-    /*
-    [
-        {},
-        {"eventTypes": [1, 2],
-        "actorNames": ["asdf", "asdfa"],
-        "sourceNames": ["asdf", "asdgf"],
-        "targetNames": ["asdf", "sdgf"],
-        "spellNames": ["asdf", "dfg"],
-        "spellIds": [9999, 1111]}
-    ]
-    [{}, {"eventTypes": [1, 2], "actorNames": ["asdf", "asdfa"], "sourceNames": ["asdf", "asdgf"], "targetNames": ["asdf", "sdgf"], "spellNames": ["asdf", "dfg"], "spellIds": [9999, 1111]}]
-    */
+    var parsedQuery = '', parsedObjArray = null, subQueryElement = null,
+        actorNameList = '', queryElementCount = 0,
+        i = 0, j = 0, n = 0, m = 0;
+    // HACK - How to do this correctly?
+    // Since we are expecting the query to be valid JSON, having a comma with
+    //   no data elements after it breaks parseJSON, this removes it when it happens
+    //   at the end of the input string.
+    if (oldQuery.substring(oldQuery.length - 2,oldQuery.length) === ',]') {
+        oldQuery = oldQuery.substring(0,oldQuery.length - 2) + ']';
+    }
     // Since the old Log Browser (LB) queries were essentailly JSON we can start with .parseJSON
     // If WoL is still using an outdated version of jQuery, use evalJSON (From the JSON plugin) instead of parseJSON.
     if (jQuery.parseJSON) {
@@ -250,11 +238,15 @@ function parseLBQuery(oldQuery) {
                 // (As long as the first query wasn't blank)
                 parsedQuery += ' OR ';
             }
+            // Reset the counter of how many query elements have been input
+            queryElementCount = 0;
+            // Wrap each query in ()
+            parsedQuery += '(';
             for (subQueryElement in parsedObjArray[i]) {
                 if (parsedObjArray[i].hasOwnProperty(subQueryElement) && typeof(subQueryElement) === 'string') {
                     switch (subQueryElement.toLowerCase()) { // Match on lower case to handle odd input
                         case 'eventtypes':
-                            parsedQuery += 'type IN (';
+                            parsedQuery += (queryElementCount > 0 ? 'AND ' : '') + 'type IN (';
                             for (n = 0, m = parsedObjArray[i][subQueryElement].length; n < m; n++) {
                                 // Properly associate the old LB number to the XE Constant
                                 switch (parsedObjArray[i][subQueryElement][n]) {
@@ -295,25 +287,66 @@ function parseLBQuery(oldQuery) {
                             }
                             // Strip the trailing ',' after we are done adding elements
                             parsedQuery = parsedQuery.substring(0, parsedQuery.length - 1) + ') ';
+                            queryElementCount++;
                         break;
                         case 'actornames':
-                            
+                            actorNameList = '';
+                            for (n = 0, m = parsedObjArray[i][subQueryElement].length; n < m; n++) {
+                                actorNameList += '"' + parsedObjArray[i][subQueryElement][n] + '",';
+                            }
+                            // Strip the trailing ',' from the list of actors (source or target)
+                            actorNameList = actorNameList.substring(0, actorNameList.length - 1);
+                            // Translate the query to XE
+                            parsedQuery += (queryElementCount > 0 ? 'AND ' : '') + '(sourceName IN (' +
+                                actorNameList + ') OR targetName IN (' + actorNameList + ')) ';
+                            queryElementCount++;
                         break;
                         case 'sourcenames':
-                            
+                            parsedQuery += (queryElementCount > 0 ? 'AND ' : '') + 'sourceName IN (';
+                            for (n = 0, m = parsedObjArray[i][subQueryElement].length; n < m; n++) {
+                                parsedQuery += '"' + parsedObjArray[i][subQueryElement][n] + '",';
+                            }
+                            // Strip the trailing ',' and finish the statement
+                            parsedQuery = parsedQuery.substring(0, parsedQuery.length - 1) + ') ';
+                            queryElementCount++;
                         break;
                         case 'targetnames':
-                            
+                            parsedQuery += (queryElementCount > 0 ? 'AND ' : '') + 'targetName IN (';
+                            for (n = 0, m = parsedObjArray[i][subQueryElement].length; n < m; n++) {
+                                parsedQuery += '"' + parsedObjArray[i][subQueryElement][n] + '",';
+                            }
+                            // Strip the trailing ',' and finish the statement
+                            parsedQuery = parsedQuery.substring(0, parsedQuery.length - 1) + ') ';
+                            queryElementCount++;
                         break;
                         case 'spellnames':
-                            
+                            parsedQuery += (queryElementCount > 0 ? 'AND ' : '') + 'spell IN (';
+                            for (n = 0, m = parsedObjArray[i][subQueryElement].length; n < m; n++) {
+                                parsedQuery += '"' + parsedObjArray[i][subQueryElement][n] + '",';
+                            }
+                            // Strip the trailing ',' and finish the statement
+                            parsedQuery = parsedQuery.substring(0, parsedQuery.length - 1) + ') ';
+                            queryElementCount++;
                         break;
                         case 'spellids':
-                            
+                            parsedQuery += (queryElementCount > 0 ? 'AND ' : '') + 'spellID IN (';
+                            for (n = 0, m = parsedObjArray[i][subQueryElement].length; n < m; n++) {
+                                parsedQuery += parsedObjArray[i][subQueryElement][n] + ',';
+                            }
+                            // Strip the trailing ',' and finish the statement
+                            parsedQuery = parsedQuery.substring(0, parsedQuery.length - 1) + ') ';
+                            queryElementCount++;
                         break;
                         default: break;
                     }
                 }
+            }
+            if (queryElementCount > 0) {
+                // Remove the trailing space after the last element and close the ()
+                parsedQuery = parsedQuery.substring(0, parsedQuery.length - 1) + ')';
+            } else {
+                // This means the query had no elements, remove the starting '('
+                parsedQuery = parsedQuery.substring(0, parsedQuery.length - 1);
             }
         }
     }
