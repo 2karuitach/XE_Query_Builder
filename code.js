@@ -30,6 +30,22 @@ function insertQueryBuilderUI () {
         $("#addElement").click();
 } // End of insertQueryBuilderUI
 
+// Inserts the base UI building blocks
+function insertLBImporterUI () {
+    // Add the tab to the interface
+    $('#logRoot').tabs('add', '#tab-LBQueryImporterUI', 'Log Browser Import');
+    // Build the base UI in the <div> created automatically above
+    $('#tab-LBQueryImporterUI').append('<textarea id="inputQuery"' +
+        ' style="width: 100%; padding: 0; margin: 0; height: 5em" />' +
+        '<input id="importQuery" type="button" value="Import Query" />' +
+        '<br /><span id="LBqueryPreview"></span>');
+        
+        // Bind the click() event on the importQuery button
+        $("#importQuery").click(function () {
+           $('#LBqueryPreview').text(parseLBQuery($('#inputQuery').val())); 
+        });
+} // End of insertLBImporterUI
+
 // Fills in the identifier list and all subsequent elements
 function fillIdentifierList() {
 	var listHtml = "", identifier, currentElement = $("#queryElementContainer div:last-child");
@@ -231,7 +247,7 @@ function parseLBQuery(oldQuery) {
     } else {
         parsedObjArray = jQuery.evalJSON(oldQuery);
     }
-    if (parsedObjArray.length > 0) {
+    if (parsedObjArray !== null && parsedObjArray.length > 0) {
         for (i = 0, j = parsedObjArray.length; i < j; i++) {
             if (i > 0 && parsedQuery.length > 0) {
                 // If we have multiple queries input, OR them together
@@ -355,4 +371,5 @@ function parseLBQuery(oldQuery) {
 
 $(document).ready(function() {
     insertQueryBuilderUI();
+    insertLBImporterUI();
 });
