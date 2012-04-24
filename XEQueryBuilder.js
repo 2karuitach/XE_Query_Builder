@@ -7,7 +7,7 @@ function insertQueryBuilderUI () {
     $('#logRoot').tabs('add', '#tab-XEQueryBuilderUI', 'Query Builder');
     // Build the base UI in the <div> created automatically above
     $('#tab-XEQueryBuilderUI').append('<div id="queryElementContainer"></div>' +
-        '<div>' +
+        '<div style="margin-top: 3px">' +
 			'<input id="addElement" type="button" value="Add element" /> with ' +
 			'<select id="joinTypeSelect">' +
 				'<option value="AND">AND</option>' +
@@ -16,18 +16,22 @@ function insertQueryBuilderUI () {
 				//'<option value=")">)</option>' +
 			'</select>' +
 			' as a joiner.' +
-		'</div>' +
-		'<span id="queryPreview"></span>');
-        
-        // Bind the click() event on the addElement button
-        $("#addElement").click(function () {
-            $("#queryElementContainer").append(generateElementHTML($("#joinTypeSelect").val()));
-            $("#joinTypeSelect").val("AND");
-            fillIdentifierList();
-        });
-        
-        // Trigger the click() event to add the initial element.
-        $("#addElement").click();
+		'</div>');
+    
+    $('<input type="submit" value="Build query">').appendTo('#tab-XEQueryBuilderUI').click(function () {
+        $('#expression').val(generateQueryString());
+        $('#logRoot').tabs('select', '#tab-querybuilder');
+    });
+    
+    // Bind the click() event on the addElement button
+    $("#addElement").click(function () {
+        $("#queryElementContainer").append(generateElementHTML($("#joinTypeSelect").val()));
+        $("#joinTypeSelect").val("AND");
+        fillIdentifierList();
+    });
+    
+    // Trigger the click() event to add the initial element.
+    $("#addElement").click();
 } // End of insertQueryBuilderUI
 
 
@@ -42,7 +46,9 @@ function fillIdentifierList() {
 	// Generate the HTML for the identifier options
 	for (identifier in XEqueryBuilderDB) {
 		if (XEqueryBuilderDB.hasOwnProperty(identifier)) {
-			listHtml += "<option value=\"" + identifier + "\" title=\"" + XEqueryBuilderDB[identifier].description + "\">" + identifier + "</option>";
+			listHtml += "<option value=\"" + identifier +
+                "\" title=\"" + XEqueryBuilderDB[identifier].description +
+                "\">" + identifier + "</option>";
 		}
 	}
 	
@@ -95,7 +101,7 @@ function fillIdentifierList() {
 		// And (re)bind to the + button's click() event
 		currentElement.find(".qualifierAdd").click(function () {
 			// When clicked add a ", " in between elements and insert a new operand
-			currentElement.find(".operandContainer").append("<span>,&nbsp;</span>" + generateOperandHtml(currentElement));
+			currentElement.find(".operandContainer").append("<span>, </span>" + generateOperandHtml(currentElement));
 			currentElement.find(".constantSelect").change(function () { updateQuery(); });
 			currentElement.find(".numberInput").change(function () { updateQuery(); });
 			currentElement.find(".stringInput").change(function () { updateQuery(); });
@@ -173,7 +179,7 @@ function generateQueryString() {
 		// If this isn't the first element, grab the join clause
 		if (i > 0) {
 			value = $(elements[i]).find(".joinClause").text();
-			queryString += " " + value.substring(0, value.length - 1) + " ";
+			queryString += "\n" + value.substring(0, value.length - 1) + " ";
 		}
 		// Insert the current identifier
 		queryString += $(elements[i]).find(".identifierSelect").val();
@@ -200,7 +206,8 @@ function generateQueryString() {
 			}
 		} else {
 			if ($(elements[i]).find(".operandContainer").children().is("select")) {
-				queryString += $(elements[i]).find(".operandContainer").children().val();
+				queryString += "\"" + $(elements[i]).find(".operandContainer").children().val()
+                    .replace(/[\\"]/g, "\\$&") + "\""; // Prepend \ to \ and " (escape string).
 			} else if ($(elements[i]).find(".operandContainer").children().is("input")) {
 				if ($(elements[i]).find(".operandContainer").children().attr("type") === "text") {
 					queryString += "\"" + $(elements[i]).find(".operandContainer").children().val() + "\"";
