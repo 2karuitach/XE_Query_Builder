@@ -34,7 +34,6 @@ function insertQueryBuilderUI () {
     $("#addElement").click();
 } // End of insertQueryBuilderUI
 
-
 // Fills in the identifier list and all subsequent elements
 function fillIdentifierList() {
 	var listHtml = "", identifier, currentElement = $("#queryElementContainer div:last-child");
@@ -71,10 +70,7 @@ function fillIdentifierList() {
 		// Bind to the change event of the operator
 		currentElement.find(".operatorSelect").change(function () {
 			var currentOperator = currentElement.find(".operatorSelect").val();
-			// Set to blank to clear any previous operands, also unbind any possible change events beforehand
-			currentElement.find(".numberInput").unbind("change");
-			currentElement.find(".stringInput").unbind("change");
-			currentElement.find(".constantSelect").unbind("change");
+			// Set to blank to clear any previous operands
 			currentElement.find(".operandContainer").html("");
 			// If IN is selected, show the + button and add in ( ) wrappers.
 			if (currentOperator === "IN") {
@@ -88,12 +84,6 @@ function fillIdentifierList() {
 			}
 			// Fill in the proper HTML for the current identifier.
 			currentElement.find(".operandContainer").html(generateOperandHtml(currentElement));
-			// Update the query if changed
-			currentElement.find(".constantSelect").change(function () { updateQuery(); });
-			currentElement.find(".numberInput").change(function () { updateQuery(); });
-			currentElement.find(".stringInput").change(function () { updateQuery(); });
-			// Update the query
-			updateQuery();
 		}); // End of operatorSelect.change()
 		
 		// Unbind any old bindings
@@ -102,33 +92,21 @@ function fillIdentifierList() {
 		currentElement.find(".qualifierAdd").click(function () {
 			// When clicked add a ", " in between elements and insert a new operand
 			currentElement.find(".operandContainer").append("<span>, </span>" + generateOperandHtml(currentElement));
-			currentElement.find(".constantSelect").change(function () { updateQuery(); });
-			currentElement.find(".numberInput").change(function () { updateQuery(); });
-			currentElement.find(".stringInput").change(function () { updateQuery(); });
 		});
 		
 		// Now that it is bound, trigger the change event to deal with the operand code, and then show the operator select
 		currentElement.find(".operatorSelect").change();
 		currentElement.find(".operatorSelect").show();
-		
-		// Update the query
-		updateQuery();
 	}); // End of identifierSelect.change()
 	
 	// Now that the change event is bound, trigger it and show everything.
 	currentElement.find(".identifierSelect").change();
 	currentElement.find(".identifierSelect").show();
 	
-	// Bind to some events for updating the displayed query
-	$("#tab-XEQueryBuilderUI input").keyup(updateQuery);
-	$("#tab-XEQueryBuilderUI input").click(updateQuery);
-	$("#tab-XEQueryBuilderUI input").change(updateQuery);
-	
 	// Bind the remove button's functionality
 	currentElement.find(".removeElement").click(function () {
 		// remove() should unbind any registered event handlers, so no need to worry about that
 		currentElement.remove();
-		updateQuery();
 	});
 } // End of fillIdentifierList()
 
@@ -166,11 +144,6 @@ function generateElementHTML(joinClause) {
 	"</div>";
 	return divHtml;
 } // End of generateElementHTML()
-
-// Update the query text
-function updateQuery() {
-	$("#queryPreview").text(generateQueryString());
-} // End of updateQuery
 
 // Generate the query string based on the current UI elements
 function generateQueryString() {
