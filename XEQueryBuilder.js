@@ -22,13 +22,14 @@ var XEqueryBuilderDB = {
     "missType":{
         "operators":["=","!=","IN"],
         "constants":["MISS_ABSORB","MISS_BLOCK","MISS_DEFLECT","MISS_DODGE","MISS_EVADE","MISS_IMMUNE","MISS_MISS","MISS_PARRY",
-            "MISS_RESIST","MISS_REFLECT"],
+            "MISS_RESIST","MISS_REFLECT","MISS_MISFIRE"],
         "description":"Event (TYPE_MISS) miss type"
     },
     "powerType":{
         "operators":["=","!=","IN"],
         "constants":["POWER_HEALTH","POWER_MANA","POWER_RAGE","POWER_FOCUS","POWER_ENERGY","POWER_HAPPINESS","POWER_RUNES",
-        "POWER_RUNIC_POWER","POWER_SOUL_SHARDS","POWER_POWER_ECLIPSE","POWER_HOLY_POWER"],
+        "POWER_RUNIC_POWER","POWER_SOUL_SHARDS","POWER_POWER_ECLIPSE","POWER_HOLY_POWER","POWER_ALTERNATE_POWER","POWER_DARK_FORCE",
+        "POWER_LIGHT_FORCE","POWER_SHADOW_ORBS","POWER_BURNING_EMBERS"],
         "description":"Event (TYPE_ENERGIZE / DRAIN / LEECH) power type"
     },
     "school":{
