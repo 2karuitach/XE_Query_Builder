@@ -4,14 +4,20 @@ function insertLBImporterUI () {
     $('#logRoot').tabs('add', '#tab-LBQueryImporterUI', 'Log Browser Import');
     // Build the base UI in the <div> created automatically above
     $('#tab-LBQueryImporterUI').append('<textarea id="inputQuery"' +
-        ' style="width: 100%; padding: 0; margin: 0; height: 5em" />' +
+        ' style="width: 99%; padding: 0; margin: 0; height: 5em" />' +
+        '<div style="text-align:right">' +
         '<input id="importQuery" type="button" value="Import Query" />' +
-        '<br /><span id="LBqueryPreview"></span>');
-        
-        // Bind the click() event on the importQuery button
-        $("#importQuery").click(function () {
-           $('#LBqueryPreview').text(parseLBQuery($('#inputQuery').val())); 
-        });
+        '</div>');
+    //$('#tab-LBQueryImporterUI').append('<br /><span id="LBqueryPreview"></span>');
+
+    // Bind the click() event on the importQuery button
+    $("#importQuery").click(function () {
+        try {
+            $('#LBqueryPreview').text(parseLBQuery($('#inputQuery').val()));
+            $('#expression').val(parseLBQuery($('#inputQuery').val()));
+            $('#logRoot').tabs('select', '#tab-querybuilder');
+        } catch (e) {}
+    });
 } // End of insertLBImporterUI
 
 // Parses old LB style queries into new XE queries
