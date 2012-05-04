@@ -1,4 +1,4 @@
-// The database of options for the UI elements
+// The database of options for the UI elements.
 var XEqueryBuilderDB = {
     "type":{
         "operators":["=","!=","IN"],
@@ -224,12 +224,12 @@ var XEqueryBuilderDB = {
     }
 };
 
-// Inserts the base UI building blocks
+// Inserts the base UI building blocks.
 function insertQueryBuilderUI () {
-    // Add the tab to the interface
+    // Add the XE Query Builder tab to the interface.
     $('#logRoot').tabs('add', '#tab-XEQueryBuilderUI', 'Query Builder');
-    // Build the base UI in the <div> created automatically above
-    $('#tab-XEQueryBuilderUI').append('<div id="queryElementContainer"></div>' +
+    // Build the base UI in the <div> created automatically above.
+    $('#tab-XEQueryBuilderUI').append('<div id=\'queryElementContainer"></div>' +
         '<div style="margin-top: 3px">' +
 			'<input id="addElement" type="button" value="Add element" /> with ' +
 			'<select id="joinTypeSelect">' +
@@ -246,7 +246,7 @@ function insertQueryBuilderUI () {
         $('#logRoot').tabs('select', '#tab-querybuilder');
     });
     
-    // Bind the click() event on the addElement button
+    // Bind the click() event on the addElement button.
     $("#addElement").click(function () {
         $("#queryElementContainer").append(generateElementHTML($("#joinTypeSelect").val()));
         $("#joinTypeSelect").val("AND");
@@ -255,17 +255,17 @@ function insertQueryBuilderUI () {
     
     // Trigger the click() event to add the initial element.
     $("#addElement").click();
-} // End of insertQueryBuilderUI
+} // End of insertQueryBuilderUI.
 
-// Fills in the identifier list and all subsequent elements
+// Fills in the identifier list and all subsequent elements.
 function fillIdentifierList() {
 	var listHtml = "", identifier, currentElement = $("#queryElementContainer div:last-child");
 	
-	// Clean up the first element
+	// Clean up the first element.
 	$("#tab-XEQueryBuilderUI div").eq(1).find(".removeElement").hide();
 	$("#tab-XEQueryBuilderUI div").eq(1).find(".joinClause").hide();
 	
-	// Generate the HTML for the identifier options
+	// Generate the HTML for the identifier options.
 	for (identifier in XEqueryBuilderDB) {
 		if (XEqueryBuilderDB.hasOwnProperty(identifier)) {
 			listHtml += "<option value=\"" + identifier +
@@ -274,10 +274,10 @@ function fillIdentifierList() {
 		}
 	}
 	
-	// Insert the <option> tags into the identifier list
+	// Insert the <option> tags into the identifier list.
 	currentElement.find(".identifierSelect").html(listHtml);
 	
-	// Bind to the change event of the identifier
+	// Bind to the change event of the identifier.
 	currentElement.find(".identifierSelect").change(function () {
 		var listHtml = "", currentIdentifier = XEqueryBuilderDB[currentElement.find(".identifierSelect").val()], operator;
 		// Fill in the operators for the currently selected identifier.
@@ -288,12 +288,12 @@ function fillIdentifierList() {
 		}
 		currentElement.find(".operatorSelect").html(listHtml);
 		
-		// Unbind any previous change event listener
+		// Unbind any previous change event listener.
 		currentElement.find(".operatorSelect").unbind("change");
-		// Bind to the change event of the operator
+		// Bind to the change event of the operator.
 		currentElement.find(".operatorSelect").change(function () {
 			var currentOperator = currentElement.find(".operatorSelect").val();
-			// Set to blank to clear any previous operands
+			// Set to blank to clear any previous operands.
 			currentElement.find(".operandContainer").html("");
 			// If IN is selected, show the + button and add in ( ) wrappers.
 			if (currentOperator === "IN") {
@@ -307,53 +307,53 @@ function fillIdentifierList() {
 			}
 			// Fill in the proper HTML for the current identifier.
 			currentElement.find(".operandContainer").html(generateOperandHtml(currentElement));
-		}); // End of operatorSelect.change()
+		}); // End of operatorSelect.change().
 		
-		// Unbind any old bindings
+		// Unbind any old bindings.
 		currentElement.find(".qualifierAdd").unbind("click");
-		// And (re)bind to the + button's click() event
+		// And (re)bind to the + button's click() event.
 		currentElement.find(".qualifierAdd").click(function () {
-			// When clicked add a ", " in between elements and insert a new operand
+			// When clicked add a ", " in between elements and insert a new operand.
 			currentElement.find(".operandContainer").append("<span>, </span>" + generateOperandHtml(currentElement));
 		});
 		
-		// Now that it is bound, trigger the change event to deal with the operand code, and then show the operator select
+		// Now that it is bound, trigger the change event to deal with the operand code, and then show the operator select.
 		currentElement.find(".operatorSelect").change();
 		currentElement.find(".operatorSelect").show();
-	}); // End of identifierSelect.change()
+	}); // End of identifierSelect.change().
 	
 	// Now that the change event is bound, trigger it and show everything.
 	currentElement.find(".identifierSelect").change();
 	currentElement.find(".identifierSelect").show();
 	
-	// Bind the remove button's functionality
+	// Bind the remove button's functionality.
 	currentElement.find(".removeElement").click(function () {
-		// remove() should unbind any registered event handlers, so no need to worry about that
+		// remove() should unbind any registered event handlers, so no need to worry about that.
 		currentElement.remove();
 	});
-} // End of fillIdentifierList()
+} // End of fillIdentifierList().
 
-// Generates the proper HTML to insert for a given identifier's operand
+// Generates the proper HTML to insert for a given identifier's operand.
 function generateOperandHtml(currentElement) {
 	var listHtml = "", x, i, currentIdentifier = XEqueryBuilderDB[currentElement.find(".identifierSelect").val()];
-	if (currentIdentifier.hasOwnProperty("constants")) { // If this identifier has a list of constants, use that in a select list
+	if (currentIdentifier.hasOwnProperty("constants")) { // If this identifier has a list of constants, use that in a select list.
 		listHtml = "<select class=\"constantSelect\">";
 		for (i = 0, x = currentIdentifier.constants.length; i < x; i++) {
 			listHtml += "<option value=\"" + currentIdentifier.constants[i] + "\">" + currentIdentifier.constants[i]+ "</option>";
 		}
 		listHtml += "</select>";
-	} else { // Otherwise use the input type defined for this identifier
+	} else { // Otherwise use the input type defined for this identifier.
 		if (currentIdentifier.inputType === "string") {
 			listHtml = "<input class=\"stringInput\" type=\"text\" value=\"\" />";
 		} else {
-			// HTML5 input type, falls back to text on browsers that don't support it
+			// HTML5 input type, falls back to text on browsers that don't support it.
 			listHtml = "<input class=\"numberInput\" type=\"number\" value=\"0\" />";
 		}
 	}
 	return listHtml;
-} // End of generateOperandHtml()
+} // End of generateOperandHtml().
 
-// Generates the base HTML for a query element
+// Generates the base HTML for a query element.
 function generateElementHTML(joinClause) {
 	var divHtml = "<div class=\"queryElement\">"+
         "<span class=\"joinClause\">" + joinClause + "&nbsp;</span>" +
@@ -366,25 +366,25 @@ function generateElementHTML(joinClause) {
 		"<input class=\"removeElement\" type=\"button\" value=\"Remove\" />" +
 	"</div>";
 	return divHtml;
-} // End of generateElementHTML()
+} // End of generateElementHTML().
 
-// Generate the query string based on the current UI elements
+// Generate the query string based on the current UI elements.
 function generateQueryString() {
 	var i, x, j, y, queryString = "", elements = $(".queryElement"), value = "", children;
 	for (i = 0, x = elements.length; i < x; i++) {
-		// If this isn't the first element, grab the join clause
+		// If this isn't the first element, grab the join clause.
 		if (i > 0) {
 			value = $(elements[i]).find(".joinClause").text();
 			queryString += "\n" + value.substring(0, value.length - 1) + " ";
 		}
-		// Insert the current identifier
+		// Insert the current identifier.
 		queryString += $(elements[i]).find(".identifierSelect").val();
-		// Insert the operator
+		// Insert the operator.
 		value = $(elements[i]).find(".operatorSelect").val();
 		queryString += " " + value;
-		// Insert the "(", if present
+		// Insert the "(", if present.
 		queryString += " " + $(elements[i]).find(".inClauseLeft").text();
-		// Handle the differing operand cases
+		// Handle the differing operand cases.
 		if (value === "IN") {
 			children = $(elements[i]).find(".operandContainer").children();
 			for (j = 0, y = children.length; j < y; j++) {
@@ -415,7 +415,7 @@ function generateQueryString() {
 		queryString += $(elements[i]).find(".inClauseRight").text();
 	}
 	return queryString;
-} // End of generateQueryString
+} // End of generateQueryString.
 
 $(document).ready(function() {
     insertQueryBuilderUI();
